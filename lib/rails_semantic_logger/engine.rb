@@ -108,13 +108,7 @@ module RailsSemanticLogger
       Resque.logger           = SemanticLogger[Resque] if defined?(Resque) && Resque.respond_to?(:logger)
 
       # Replace the Sidekiq logger
-      if defined?(Sidekiq)
-        if defined?(Sidekiq::Logging)
-          Sidekiq::Logging.logger = SemanticLogger[Sidekiq]
-        else
-          Sidekiq.logger = SemanticLogger[Sidekiq]
-        end
-      end
+      Sidekiq.logger = SidekiqLogger.new(SemanticLogger[Sidekiq]) if defined?(Sidekiq)
 
       # Replace the Sidetiq logger
       Sidetiq.logger          = SemanticLogger[Sidetiq] if defined?(Sidetiq)
@@ -141,6 +135,7 @@ module RailsSemanticLogger
       require('rails_semantic_logger/extensions/action_view/streaming_template_renderer') if defined?(ActionView::StreamingTemplateRenderer::Body)
       require('rails_semantic_logger/extensions/active_job/logging') if defined?(ActiveJob)
       require('rails_semantic_logger/extensions/active_model_serializers/logging') if defined?(ActiveModelSerializers)
+      require('rails_semantic_logger/extensions/sidekiq/sidekiq_logger') if defined?(Sidekiq)
 
       if config.rails_semantic_logger.semantic
         # Active Record
